@@ -154,11 +154,3 @@ This MATLAB script compares nighttime **in-situ irradiance (C-OPS Ed₀)** to **
 
 All scripts are focused on the greater Lake Washington and Lake Sammamish watersheds, including urban and pelagic zones, bridges, tributaries, and natural buffers.
 
----
-
-## 📦 MATLAB Version Compatibility
-
-These scripts were tested on **MATLAB R2022a** and later. For best performance, ensure the following toolboxes and external functions are installed and on your MATLAB path:
-- `m_map`
-- TIFF and CSV I/O support
-- Non-parametric trend test functions (`Mann_Kendall`, `TheilSen`)
