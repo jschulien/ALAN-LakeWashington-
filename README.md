@@ -25,4 +25,4 @@ This script processes hyperspectral irradiance profiles collected using a **Comp
 - **Kd Calculation**:
   - Calculates vertical diffuse attenuation coefficient (Kd) from smoothed, interpolated Edz profiles.
   - Filters out non-physical values (Kd > 2 or Kd ≤ 0).
-  - 
+ 
