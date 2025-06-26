@@ -113,6 +113,43 @@ Covers 36 custom regions:
 
 ---
 
+### 4. `match_nightly_viirs.m`
+
+#### 📌 Description
+This MATLAB script compares nighttime **in-situ irradiance (C-OPS Ed₀)** to **VIIRS Day/Night Band (DNB)** radiance at coincident spatial locations on Lake Washington. It integrates each C-OPS wavelength channel against the VIIRS spectral response to derive a **spectrally weighted in-situ irradiance**, then compares this with radiance extracted from VIIRS pixels at each C-OPS station. This script produces **Figure 4b–c** in the final publication.
+
+#### 📥 Input
+- VIIRS nightly radiance (subset `.mat`)  
+- C-OPS nighttime irradiance (`COPS_night_irr_*.mat`)  
+- C-OPS sensor response curve (`SpectralResponse_Ed0_SN*.csv`)  
+- VIIRS spectral response (`suomi_NPP_onorbit_datathief.csv`)  
+- Lake Washington shapefile (`Waterbodies_with_History_and_Jurisdictional_detail_*.shp`)  
+
+#### 📤 Output
+- Matched and weighted radiance–irradiance scatter plot  
+- `Xvec_norm`: Spectrally weighted in-situ Ed₀  
+- `mat_out`: Table of VIIRS/C-OPS matched coordinates and values  
+- ROI-based vectors for Figure 4 panels b–c
+
+#### ⚙️ Key Workflow
+1. Load VIIRS/DNB radiance for the target night (`viirs_rad_*.mat`)
+2. Load in-situ C-OPS nighttime Ed₀ data (`COPS_night_irr_*.mat`)
+3. Load and interpolate spectral response curves:
+   - C-OPS reference sensor (Ed₀)
+   - VIIRS Day/Night Band (DNB)
+4. Spectrally weight in-situ Ed₀ data using VIIRS/DNB response
+5. Subset VIIRS radiance to Lake Washington using polygon shapefile
+6. Extract VIIRS radiance at each in-situ cast location (nearest bin)
+7. Assign in-situ stations to predefined ROIs (e.g., Pelagic, Nearshore)
+8. Plot spectrally weighted Ed₀ vs. L-VIIRS for matched sites
+
+#### 📦 Requirements
+- MATLAB R2022a or later
+- `m_map` toolbox (for map projections)
+- NASA VIIRS/DNB `.mat` product (from `import_nightly_viirs.m`)
+
+---
+
 ## 🧭 Region of Interest Summary
 
 All scripts are focused on the greater Lake Washington and Lake Sammamish watersheds, including urban and pelagic zones, bridges, tributaries, and natural buffers.
