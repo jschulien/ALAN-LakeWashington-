@@ -6,7 +6,7 @@
 % 1. Raw C-OPS files for each cast for July 24, 2024 which can be found in the USGS data repository
 
 % Outputs:
-% 1. Kd(z) calculated for all sites.
+% 1. Kd(z) calculated for all sites: '072424_day_1010_all.mat', '072424_day_477_all.mat', and '072424_day_470_all.mat'.
 
 clear; close all
 
@@ -118,7 +118,7 @@ i13 = [30,31,32]; id13 = find(ismember(cast, i13));
 i10 = [33,34,36]; id10 = find(ismember(cast, i10));
 i48 = [37,38,39]; id48 = find(ismember(cast, i48));
 
-%% Station 470
+%% Station 58 (NOW 470)
 % Ed0 = data(:,1:19); Edz = data(:,20:38); Luz = data(:,39:end);
 c1 = data_corr_smooth{id58(1)};  
 c2 = data_corr_smooth{id58(2)};  
@@ -186,3 +186,165 @@ clear i j Kt kdt vec
 
 % Create Kd depth vector to plot
 d = Y(1:end-1);
+return
+% subplot(1,4,3)
+% maxK = max(max(Kd)); minK = min(min(Kd)); 
+% levels = linspace(minK, maxK, 25);
+% contourf(X,d,Kd,levels); 
+% set(gca,'YDir','reverse')
+% % ylabel('Depth (m)'); 
+% xlabel('Wavelength (nm)'); grid on; 
+% title('470: K_d');  
+% set(gca,'FontSize',14);  set(gca, 'YDir','reverse')
+% cb = colorbar; 
+% ylabel(cb,'K_d (m^-^1)','FontSize',12)
+% ylim([0 40]);
+
+% subplot(1,4,4)
+% figure; plot(Kd(:,9),d,'r.-','LineWidth',0.75,'MarkerSize',12); hold on
+% plot(Kd(:,9),d,'k.-','LineWidth',1,'MarkerSize',14); hold on
+% set(gca,'YDir','reverse')
+% % ylabel('Depth (m)'); 
+% xlabel('K_d'); grid on; 
+% % title('470: K_d(555)');  
+% set(gca,'FontSize',14);  set(gca, 'YDir','reverse'); 
+% ylim([0 40]);
+
+save('072424_day_470_all.mat','Kd','X','d'); % For 'ALAN_Kd_fig.m'
+
+%% Station 18 (NOW 477)
+c1 = data_corr_smooth{id18(1)}; c2 = data_corr_smooth{id18(2)}; c3 = data_corr_smooth{id18(3)};
+new_depth = 0.35:.5:22; % no data below 18m
+d1 = c1(:,1); c1  = c1(:,6:end); 
+D1 = interp1(d1,c1,new_depth,"spline"); 
+d2 = c2(:,1); c2 = c2(:,6:end); 
+D2 = interp1(d2,c2,new_depth,"spline"); 
+d3 = c3(:,1); c3 = c3(:,6:end); 
+D3 = interp1(d3,c3,new_depth,"spline"); 
+Xmat18 = D3; 
+ 
+% format long;  
+Y =  new_depth; X = wvl; Z = Xmat18(:,20:38);
+% Y =  new_depth; X = wvl(1:18); Z = Xmat18(:,20:37);
+% minZ = min(Z(:)); maxZ = max(Z(:));
+% levels = linspace(minZ, maxZ, 17); 
+% figure; subplot(1,4,1)
+% contourf(X,Y,Z,levels); 
+% set(gca,'YDir','reverse')
+% ylabel('Depth (m)'); xlabel('Wavelength (nm)'); grid on; 
+% title('477: E_d');  
+% set(gca,'FontSize',14);  set(gca, 'YDir','reverse')
+% cb = colorbar; 
+% ylabel(cb,'E_d (\muW cm^2 nm^-^1)','FontSize',12)
+% ylim([0 18]);
+
+% % subplot(1,4,2)
+% plot(Z(:,9),Y,'k.-','LineWidth',1,'MarkerSize',14); hold on
+% set(gca,'YDir','reverse')
+% % ylabel('Depth (m)'); 
+% xlabel('E_d(555)'); grid on; 
+% title('477: E_d(555)');  
+% set(gca,'FontSize',14);  set(gca, 'YDir','reverse'); 
+% ylim([0 25]);
+
+% plot(c1(:,29),d1,'r-','LineWidth',.5); hold on
+% plot(D1(:,29),new_depth,'r--','LineWidth',1); 
+% plot(c2(:,29),d2,'r-','LineWidth',.5); 
+% plot(D2(:,29),new_depth,'b--','LineWidth',1); 
+% plot(c3(:,29),d3,'r-','LineWidth',.5); 
+% plot(D3(:,29),new_depth,'g--','LineWidth',1);
+% plot(Xmat18(:,29),new_depth,'m-','LineWidth',1.5); 
+% set(gca, 'YDir','reverse'); 
+
+clear c1 c2 c3 d1 d2 d3 D1 D2 D3
+
+Kd = []; 
+for i = 1:size(Z,2)
+    vec = Z(:,i);
+    Kt = [];
+    for j = 2:size(vec,1)
+        if vec(j-1) < vec(j) || vec(j) <= 0
+            kdt = NaN;
+        else
+            kdt = log(vec(j-1)./vec(j)) ./ (Y(j) - Y(j-1));
+        end
+        if kdt > 2 || kdt <= 0
+            kdt = NaN; 
+        end
+        Kt = [Kt;kdt]; 
+    end
+    Kd = [Kd,Kt];
+end
+clear i j Kt kdt vec
+
+% Create Kd depth vector to plot
+d = Y(1:end-1);
+
+save('072424_day_477_all.mat','Kd','X','d'); % For 'ALAN_Kd_fig.m'
+
+%% Station 10 (NOW 1010)
+c1 = data_corr_smooth{id10(1)}; c2 = data_corr_smooth{id10(2)}; c3 = data_corr_smooth{id10(3)};
+new_depth = .25:.5:10; 
+d1 = c1(:,1); c1 = c1(:,6:end); 
+D1 = interp1(d1,c1,new_depth,"spline"); 
+d2 = c2(:,1); c2 = c2(:,6:end); 
+D2 = interp1(d2,c2,new_depth,"spline"); 
+d3 = c3(:,1); c3 = c3(:,6:end); 
+D3 = interp1(d3,c3,new_depth,"spline"); 
+Xmat10 = (D1 + D2 + D3)./ 3;
+ 
+% format long;  
+Y =  new_depth; X = wvl; Z = Xmat10(:,20:38);
+% Y =  new_depth; X = wvl(1:18); Z = Xmat10(:,20:37);
+% minZ = min(Z(:)); maxZ = max(Z(:));
+% levels = linspace(minZ, maxZ, 17); 
+% figure; subplot(1,4,1)
+% contourf(X,Y,Z,levels); 
+% set(gca,'YDir','reverse')
+% ylabel('Depth (m)'); xlabel('Wavelength (nm)'); grid on; 
+% title('1010: E_d');  
+% set(gca,'FontSize',14);  set(gca, 'YDir','reverse')
+% cb = colorbar;  
+% ylabel(cb,'E_d (\muW cm^2 nm^-^1)','FontSize',12)
+% ylim([0 10]);
+
+% subplot(1,4,2)
+% plot(Z(:,9),Y,'k.-','LineWidth',1,'MarkerSize',14); hold on
+% set(gca,'YDir','reverse')
+% % ylabel('Depth (m)'); 
+% xlabel('E_d(555)'); grid on; 
+% title('1010: E_d(555)');  
+% set(gca,'FontSize',14);  set(gca, 'YDir','reverse'); 
+% ylim([0 10]);
+
+% plot(c1(:,29),d1,'r-','LineWidth',.5); 
+% % plot(D1(:,29),new_depth,'r--','LineWidth',1); 
+% plot(c2(:,29),d2,'r-','LineWidth',.5); 
+% % plot(D2(:,29),new_depth,'r--','LineWidth',1); 
+% plot(c3(:,29),d3,'r-','LineWidth',.5); 
+% % plot(D3(:,29),new_depth,'r--','LineWidth',1); 
+clear c1 c2 c3 d1 d2 d3 D1 D2 D3
+
+Kd = []; 
+for i = 1:size(Z,2)
+    vec = Z(:,i);
+    Kt = [];
+    for j = 2:size(vec,1)
+        if vec(j-1) < vec(j) || vec(j) <= 0
+            kdt = NaN;
+        else
+            kdt = log(vec(j-1)./vec(j)) ./ (Y(j) - Y(j-1));
+        end
+        if kdt > 2 || kdt <= 0
+            kdt = NaN; 
+        end
+        Kt = [Kt;kdt]; 
+    end
+    Kd = [Kd,Kt];
+end
+clear i j Kt kdt vec
+
+% Create Kd depth vector to plot
+d = Y(1:end-1);
+
+save('072424_day_1010_all.mat','Kd','X','d'); % For 'ALAN_Kd_fig.m'
