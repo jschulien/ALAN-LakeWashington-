@@ -1,10 +1,16 @@
 % viirs_trend_analysis.m
 
 % This program will load the subsetted data imported using
-% 'viirs_dnb_monthly_reader_2014_2023.m'
+% 'viirs_dnb_monthly_reader_2014_2023.m' and calculate trends from 2014-2023 for each ROI
 
-clear
-close all
+% Inputs: Available upon request as they are too large to make available on GitHub
+% 1. 'SVDNB_202208_75N180W_rad.mat'
+% 2. 'viirs_subset_2014_2023_sl.mat'
+
+% Outputs:
+% 1. Trend statistics for every ROI
+
+clear; close all
 
 %% Create ROIs
 % Northern pelagic 
@@ -154,10 +160,10 @@ roi35_lon = [-122.103 -122.08 -122.098 -122.094 -122.076 -122.078 -122.095 -122.
 
 %% Load VIIRS data
 tic
-path = '/Users/jschulien/MATLAB/ALAN/data/VIIRS/VIIRS_2014_2023'; cd(path);
+path = '/data/VIIRS/VIIRS_2014_2023'; cd(path);
 load('viirs_subset_2014_2023_sl.mat'); % 08/2022 not included in this matrix, added below 
 
-addpath('/Users/jschulien/m_map')
+addpath('/m_map')
 D = D(4:end); % There are no data for file 1-5
 
 % Create date vector from filename
