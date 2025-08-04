@@ -1,11 +1,19 @@
-% imports C-OPS day files
+% imports and processes C-OPS day files (collected on July 24, 2024)
 % Qa'Qc of data with histograms of pitch and roll for both in-water and reference arrays
 % Calculates Kd(z)
+
+% Inputs: 
+% 1. Raw C-OPS files for each cast for July 24, 2024 which can be found in the USGS data repository
+
+% Outputs:
+% 1. Kd(z) calculated for all sites.
 
 clear; close all
 
 %% Import data
-path = '/Users/jschulien/MATLAB/ALAN/data/COPS/072424_day'; cd(path);
+% All of the raw C-OPS files are available on the USGS data repository
+% Files will have this naming convention '072424_day_CAST_001_240724_090855_URC.csv'
+path = '/COPS/072424_day'; cd(path);
 
 files = dir('*URC.csv'); cast = []; 
 for i = 1:numel(files)
