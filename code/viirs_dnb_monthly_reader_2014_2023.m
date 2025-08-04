@@ -4,13 +4,14 @@
 % The stray light version was not available for 2012-2013, 
 % so there is no data coverage for the months of interest for this period.
 
-% April 5, 2024
+% Inputs: VIIRS/DNB monthly radiance composite files
+% Output: 'viirs_subset_2014_2023_sl.mat'; this file is too large for GitHub so is available upon request
 
 clear
 close all
 
 %% Load Data and Create Subsetted Matlab file for Analysis
-path = '/Users/jschulien/MATLAB/ALAN/data/VIIRS/VIIRS_2014_2023'; 
+path = '/data/VIIRS/VIIRS_2014_2023'; 
 cd(path); 
 
 tic
