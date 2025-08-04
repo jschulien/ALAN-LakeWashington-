@@ -1,5 +1,25 @@
 % match_nightly_viirs.m
+% Analyzes correpondence between VIIRS and C-OPS measurements
+% Creates spectrally-weighted C-OPS value for analysis
+% Applies GLM and calculates statistics
 % Creates panels b and c for Figure 4
+
+% Inputs:
+% 1. 'SpectralResponse_Ed0 SN851.csv'
+% 2. 'suomi_NPP_onorbit_datathief.csv'
+% 3. 'viirs_rad_080624d_subset.mat'
+% 4. 'COPS_night_irr_080524.mat'
+% 5. 'Waterbodies_with_History_and_Jurisdictional_detail___wtrbdy_det_area.shp'
+% 6. 'viirs_rad_080724d_subset.mat'
+% 7. 'COPS_night_irr_080624.mat'
+% 8. 'viirs_rad_080824d_subset.mat'
+% 9. 'COPS_night_irr_080724.mat'
+% 10. 'viirs_rad_081524d_subset.mat'
+% 11. 'COPS_night_irr_081424.mat'
+
+% Outputs:
+% 1. GLM figures and statistics
+% 2. Figure 4c showing spectral sensitivites of two sensors
 
 clear; close all
 
@@ -7,7 +27,7 @@ addpath('/Users/jschulien/m_map')
 wvl = [380, 395, 412, 443, 465, 490, 510, 532, 555, 560, 565, 589, 625, 665, 670, 683, 694, 710, 800]; % in-situ wavelengths (800 = PAR)
 
 %% Import C-OPS and VIIRS/DNB response curves 
-path = '/Users/jschulien/MATLAB/ALAN/data/ResponseCurves'; cd(path);
+path = '/ALAN/data/ResponseCurves'; cd(path);
 fname = 'SpectralResponse_Ed0 SN851.csv';
 dat = dlmread(fname, ',', 1, 0);
 response_in_situ = dat(:,2:end); % not inlcuding PAR
@@ -21,17 +41,16 @@ wavelength_viirs = dat(:,1); viirs_response = dat(:,2); clear dat fname
 
 %% Import Data 08/05/24 [VIIRS 08/06/24]
 % Import daily VIIRS/DNB image 
-path = '/Users/jschulien/MATLAB/ALAN/data/VIIRS/Nightly/080624'; cd(path); 
+path = '/data/VIIRS/Nightly/080624'; cd(path); 
 fname = 'viirs_rad_080624d_subset.mat'; % from import_nightly_viirs.m
 load(fname); clear fname
 [long,latg] = meshgrid(lon, lat);
 
 % Load C-OPS data
-path = '/Users/jschulien/Matlab/ALAN/data/COPS/080524_night'; cd(path); 
+path = '/data/COPS/080524_night'; cd(path); 
 load('COPS_night_irr_080524.mat'); 
 
 % Identify Lake Washington data
-path = ('/Users/jschulien/Matlab/Waterbodies_with_History_and_Jurisdictional_detail___wtrbdy_det_area'); cd(path)
 S = shaperead('Waterbodies_with_History_and_Jurisdictional_detail___wtrbdy_det_area.shp');
 
 F = S(16284); % Lake Washington
@@ -95,42 +114,42 @@ end
 headers_mat_out = {'Lon-VIIRS','Lat-VIIRS','Lon-C-OPS','Lat-C-OPS','Delta-km','L-VIIRS'};
 clear j ii
 
-% Middle pelagic north 
+% Middle pelagic north (yellow)
 roi2_lat = [47.69 47.69 47.66 47.657 47.648 47.649 47.66 47.6735 47.685 47.69];
 roi2_lon = [-122.245 -122.225 -122.225 -122.241 -122.248 -122.26 -122.255 -122.236 -122.239 -122.245];
 in2 = inpolygon(lon,lat,roi2_lon,roi2_lat);
 
-% South suspension bridge 
+% South suspension bridge (red)
 roi4_lat = [47.5879 47.5879 47.592 47.592 47.5879];
 roi4_lon = [-122.26 -122.278 -122.278 -122.26 -122.26]; 
 in4 = inpolygon(lon,lat,roi4_lon,roi4_lat);
 
-% Middle pelagic 3/south 
+% Middle pelagic 3/south (yellow)
 roi10_lat = [47.58075 47.58075 47.566 47.555 47.541 47.541 47.555 47.568 47.568 47.58075];
 roi10_lon = [-122.278 -122.26 -122.2375 -122.2375 -122.25 -122.254 -122.24 -122.25 -122.262 -122.278]; 
 in10 = inpolygon(lon,lat,roi10_lon,roi10_lat); 
 
-% Southwest pelagic 
+% Southwest pelagic (green)
 roi5_lat = [47.5349 47.535 47.52 47.515 47.51 47.516 47.52 47.5349];
 roi5_lon = [-122.2565 -122.2515 -122.2315 -122.2165 -122.2165 -122.2365 -122.2465 -122.2565];
 in5 = inpolygon(lon,lat,roi5_lon,roi5_lat);
 
-% Middle pelagic 2/middle 
+% Middle pelagic 2/middle (yellow)
 roi6_lat = [47.63 47.63 47.608 47.608 47.6 47.6 47.6 47.63];
 roi6_lon = [-122.268 -122.25 -122.25 -122.23 -122.23 -122.25 -122.268 -122.268];
 in6 = inpolygon(lon,lat,roi6_lon,roi6_lat);
 
-% Southeast pelagic 
+% Southeast pelagic (green); 
 roi11_lat = [47.52 47.538 47.56 47.56 47.538 47.525 47.52];
 roi11_lon = [-122.2165 -122.203 -122.203 -122.205 -122.205 -122.22 -122.2165];
 in11 = inpolygon(lon,lat,roi11_lon,roi11_lat);
 
-% Nearshore southsouthwest 
+% Nearshore southsouthwest (blue)
 roi17_lat = [47.503 47.5125 47.514 47.521 47.521 47.512 47.509 47.498 47.503];
 roi17_lon = [-122.22 -122.238 -122.25 -122.258 -122.265 -122.25 -122.238 -122.22 -122.22];
 in17 = inpolygon(lon,lat,roi17_lon,roi17_lat);
 
-% Nearshore north of Gene Coulon Park 
+% Nearshore north of Gene Coulon Park (blue)
 roi32_lat = [47.519 47.519 47.5335 47.5335 47.519];
 roi32_lon = [-122.2105 -122.213 -122.204 -122.199 -122.2105];
 in32 = inpolygon(lon,lat,roi32_lon,roi32_lat);
@@ -154,17 +173,16 @@ light1 = [Xmat(in2,12);Xmat(in4,12);Xmat(in5,12);Xmat(in6,12);Xmat(in10,12);Xmat
 
 %% Nighttime sampling 8/6/2024 (VIIRS 08/07/2024)
 % Import daily VIIRS/DNB image 
-path = '/Users/jschulien/MATLAB/ALAN/data/VIIRS/Nightly/080724'; cd(path); 
+path = '/data/VIIRS/Nightly/080724'; cd(path); 
 fname = 'viirs_rad_080724d_subset.mat';
 load(fname); clear fname
 [long,latg] = meshgrid(lon, lat);
 
 % Load C-OPS data
-path = '/Users/jschulien/Matlab/ALAN/data/COPS/080624_night'; cd(path); 
+path = '/data/COPS/080624_night'; cd(path); 
 load('COPS_night_irr_080624.mat'); 
 
 % Identify Lake Washington data
-path = ('/Users/jschulien/Matlab/Waterbodies_with_History_and_Jurisdictional_detail___wtrbdy_det_area'); cd(path)
 S = shaperead('Waterbodies_with_History_and_Jurisdictional_detail___wtrbdy_det_area.shp');
 
 F = S(16284); % Lake Washington
@@ -221,27 +239,27 @@ for j = 1:size(lat,2) % for every C-OPS site
 end
 clear j ii
 
-% Northern pelagic
+% Northern pelagic (magenta)
 roi1_lon = [-122.275 -122.27 -122.27 -122.26 -122.25 -122.25 -122.25 -122.26 -122.265 -122.27 -122.275]; roi1_lon = roi1_lon - 0.0025;
 roi1_lat = [47.74 47.74 47.73 47.71 47.7 47.695 47.695 47.695 47.71 47.72 47.74];
 in1 = inpolygon(lon,lat,roi1_lon,roi1_lat);
 
-% Middle pelagic north 
+% Middle pelagic north (yellow)
 roi2_lat = [47.69 47.69 47.66 47.657 47.648 47.649 47.66 47.6735 47.685 47.69];
 roi2_lon = [-122.245 -122.225 -122.225 -122.241 -122.248 -122.26 -122.255 -122.236 -122.239 -122.245];
 in2 = inpolygon(lon,lat,roi2_lon,roi2_lat);
 
-% North suspension bridge
+% North suspension bridge (red)
 roi3_lat = [47.643 47.641 47.638 47.64 47.643];
 roi3_lon = [-122.269 -122.25 -122.25 -122.269 -122.269];
 in3 = inpolygon(lon,lat,roi3_lon,roi3_lat);
 
-% South suspension bridge 
+% South suspension bridge (red)
 roi4_lat = [47.5879 47.5879 47.592 47.592 47.5879];
 roi4_lon = [-122.26 -122.278 -122.278 -122.26 -122.26]; 
 in4 = inpolygon(lon,lat,roi4_lon,roi4_lat);
 
-% Middle pelagic 2/middle 
+% Middle pelagic 2/middle (yellow)
 roi6_lat = [47.63 47.63 47.608 47.608 47.6 47.6 47.6 47.63];
 roi6_lon = [-122.268 -122.25 -122.25 -122.23 -122.23 -122.25 -122.268 -122.268];; 
 in6 = inpolygon(lon,lat,roi6_lon,roi6_lat);
@@ -278,22 +296,17 @@ Y2 = [Xvec_norm(in1);Xvec_norm(in2);Xvec_norm(in3);Xvec_norm(in4);Xvec_norm(in6)
 light2 = [Xmat(in1,12);Xmat(in2,12);Xmat(in3,12);Xmat(in4,12);Xmat(in6,12);Xmat(in19,12);Xmat(in20,12);Xmat(in22,12);Xmat(ii,12)];
 
 %% Nighttime sampling 8/7/2024 (VIIRS 08/08/2024)
-% % Import average from C-OPS High Gains file
-path = '/Users/jschulien/MATLAB/ALAN/data/COPS/080724_night/GAIN_files/High_gain'; cd(path);
-load('080724_night_HIGH_dark.mat'); 
-
 % Import daily VIIRS/DNB image 
-path = '/Users/jschulien/MATLAB/ALAN/data/VIIRS/Nightly/080824'; cd(path); 
+path = '/data/VIIRS/Nightly/080824'; cd(path); 
 fname = 'viirs_rad_080824d_subset.mat';
 load(fname); clear fname
 [long,latg] = meshgrid(lon, lat);
 
 % Load C-OPS data
-path = '/Users/jschulien/Matlab/ALAN/data/COPS/080724_night'; cd(path); 
+path = '/data/COPS/080724_night'; cd(path); 
 load('COPS_night_irr_080724.mat');
 
 % Identify Lake Washington data
-path = ('/Users/jschulien/Matlab/Waterbodies_with_History_and_Jurisdictional_detail___wtrbdy_det_area'); cd(path)
 S = shaperead('Waterbodies_with_History_and_Jurisdictional_detail___wtrbdy_det_area.shp');
 
 F = S(16284); % Lake Washington
@@ -395,11 +408,10 @@ load(fname); clear fname
 [long,latg] = meshgrid(lon, lat);
 
 % Load C-OPS data
-path = '/Users/jschulien/Matlab/ALAN/data/COPS/081424_night'; cd(path); 
+path = '/data/COPS/081424_night'; cd(path); 
 load('COPS_night_irr_081424.mat');
 
 % Identify Lake Washington data
-path = ('/Users/jschulien/Matlab/Waterbodies_with_History_and_Jurisdictional_detail___wtrbdy_det_area'); cd(path)
 S = shaperead('Waterbodies_with_History_and_Jurisdictional_detail___wtrbdy_det_area.shp');
 
 % Define the bounding box coordinates for the Ship Canal
@@ -478,3 +490,53 @@ Xmat = mout(:,2:end);
 X4 = [mat_out(in8,6);mat_out(ii,6)];
 Y4 = [Xvec_norm(in8);Xvec_norm(ii)]; 
 light4 = [Xmat(in8,12);Xmat(ii,12)];
+
+%% Statistics
+X = [X1;X2;X3;X4]; Y = [Y1;Y2;Y3;Y4]; light = [light1;light2;light3;light4];
+glm_mdl = fitglm(X, Y, 'linear');  % Fit a GLM with a linear link function
+return
+r2 = glm_mdl.Rsquared.Adjusted;
+a = glm_mdl.Coefficients.Estimate(2); 
+b = glm_mdl.Coefficients.Estimate(1); 
+x2 = [0:0.5:60]; y2 = (a.*x2) + b;
+plot(x2,y2,'r--')
+
+figure; plot(light,glm_mdl.Residuals.Raw,'k.','MarkerSize',15); grid on
+xlabel('E_d(589)'); ylabel('Model Residuals'); set(gca,'FontSize',14); 
+[r,p] = corr(light,glm_mdl.Residuals.Raw)
+return
+%% Figure
+% figure; 
+% plot(wavelength_viirs,viirs_response,'r','LineWidth',1.5); hold on
+% plot(wavelength_in_situ,response_in_situ(:,1:18),'k'); 
+% grid on
+% xlabel('Wavelength (nm)'); ylabel('Spectral Response');
+% legend('VIIRS/DNB','C-OPS');
+% set(gca,'FontSize',14)
+
+figure; 
+hold on
+
+% Plot VIIRS response
+plot(wavelength_viirs, viirs_response, 'r', 'LineWidth', 1.5);
+
+% Plot and fill each C-OPS curve
+for i = 1:18
+    y = response_in_situ(:,i);
+    x = wavelength_in_situ;
+    
+    % Only fill if y has no NaNs
+    if all(~isnan(y))
+        fill([x; flipud(x)], [zeros(size(y)); flipud(y)], ...
+             [0.5 0.5 0.5], 'FaceAlpha', 0.2, 'EdgeColor', 'none');
+    end
+
+    % Plot the curve on top
+    plot(x, y, 'k');
+end
+
+grid on
+xlabel('Wavelength (nm)');
+ylabel('Spectral Response');
+legend('VIIRS/DNB','C-OPS');
+set(gca,'FontSize',16);
