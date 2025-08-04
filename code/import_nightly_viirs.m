@@ -1,8 +1,7 @@
 % import_nightly_viirs.m
+% Imports a single nightly VIIRS file into Matlab, subsets, then saves. 
 
 % clear; close all
-
-% 'Import' single daily VIIRS file into Matlab
 
 % Subset the data
 lat = -65:0.0041666:75;
